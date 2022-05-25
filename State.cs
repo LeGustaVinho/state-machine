@@ -26,8 +26,8 @@ namespace LegendaryTools
         public State(TState name, StateMachine<TState, TTrigger> owner = null) : base(owner)
         {
             Name = name;
-            base.OnConnectionAdd += OnConnectionAdd;
-            base.OnConnectionRemove += OnConnectionRemove;
+            OnConnectionAdd += OnAddStateConnection;
+            OnConnectionRemove += OnRemoveStateConnection;
         }
 
         internal State(TState name, StateMachine<TState, TTrigger> owner, bool isAnyState) : this(name, owner)
@@ -165,19 +165,22 @@ namespace LegendaryTools
         internal void InvokeOnStateEnter(object arg)
         {
             OnStateEnter(arg);
+            OnStateEnterEvent?.Invoke(arg);
         }
 
         internal void InvokeOnStateUpdate(object arg)
         {
             OnStateUpdate(arg);
+            OnStateUpdateEvent?.Invoke(arg);
         }
 
         internal void InvokeOnStateExit(object arg)
         {
             OnStateExit(arg);
+            OnStateExitEvent?.Invoke(arg);
         }
 
-        private void OnConnectionAdd(StateConnection<TState, TTrigger> stateConnection)
+        private void OnAddStateConnection(StateConnection<TState, TTrigger> stateConnection)
         {
             if (stateConnection.From == this)
             {
@@ -185,7 +188,7 @@ namespace LegendaryTools
             }
         }
 
-        private void OnConnectionRemove(StateConnection<TState, TTrigger> stateConnection)
+        private void OnRemoveStateConnection(StateConnection<TState, TTrigger> stateConnection)
         {
             if (stateConnection.From == this)
             {
