@@ -1,7 +1,7 @@
 {
   "name": "com.legustavinho.legendary-tools-state-machine",
   "displayName": "Legendary Tools - State Machine",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "unity": "2019.4",
   "type": "library",
   "keywords": [],
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/LeGustaVinho/state-machine.git"
   },
   "dependencies": {
-	  "com.legustavinho.legendary-tools-graphs": "https://github.com/LeGustaVinho/graphs.git"
+	  "com.legustavinho.legendary-tools-graphs": "1.0.2"
   },
   "author": {
     "name": "LeGustaVinho",
