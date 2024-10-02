@@ -2,7 +2,7 @@
 
 A robust and flexible state machine implementation for Unity, designed to handle complex game logic with ease, based on Unity Mecanim. The AdvancedStateMachine class allows you to define states, transitions, and conditions using various parameter types such as floats, integers, booleans, and triggers.
 
-##Features
+# Features
 
 - **Generic and Type-Safe:** Utilize generic types to define states and parameters.
 - **Multiple Parameter Types:** Supports float, int, bool, and trigger parameters.
@@ -14,7 +14,7 @@ A robust and flexible state machine implementation for Unity, designed to handle
 
 ## How to install
 
-### - From OpenUPM:
+### From OpenUPM:
 
 - Open **Edit -> Project Settings -> Package Manager**
 - Add a new Scoped Registry (or edit the existing OpenUPM entry)
@@ -29,8 +29,9 @@ A robust and flexible state machine implementation for Unity, designed to handle
 - Select `Add package from git URL...`
 - Paste `com.legustavinho.legendary-tools-state-machine` and click `Add`
 
-##Basic Usage
-###Defining States
+## Basic Usage
+
+### Defining States
 Create custom states by inheriting from the `State<T>` class, where T is the type of your parameter identifiers (e.g., `string`, `enum`).
 
 ```csharp
@@ -66,7 +67,7 @@ public class MoveState : State<string>
     // Implement other methods as needed
 }
 ```
-###Creating the State Machine
+### Creating the State Machine
 
 Instantiate the `AdvancedStateMachine<T>` class, providing an "AnyState" and a name for your state machine.
 
@@ -74,7 +75,7 @@ Instantiate the `AdvancedStateMachine<T>` class, providing an "AnyState" and a n
 var anyState = new State<string>("Any");
 var stateMachine = new AdvancedStateMachine<string>(anyState, "CharacterStateMachine");
 ```
-###Adding Parameters
+### Adding Parameters
 Add parameters that will be used in transitions. Parameters can be of types `Float`, `Int`, `Bool`, or `Trigger`.
 
 ```csharp
@@ -82,7 +83,7 @@ stateMachine.AddParameter("IsMoving", ParameterType.Bool);
 stateMachine.AddParameter("Speed", ParameterType.Float);
 ```
 
-###Defining Transitions
+### Defining Transitions
 Connect states and define conditions for transitions using the ConnectTo method and adding conditions.
 
 ```csharp
@@ -110,14 +111,14 @@ var toIdleTransition = moveState.ConnectTo(
 toIdleTransition.AddCondition("IsMoving", BoolParameterCondition.False);
 ```
 
-###Starting the State Machine
+### Starting the State Machine
 Start the state machine by specifying the initial state.
 
 ```csharp
 stateMachine.Start(idleState);
 ```
 
-###Updating Parameters and State Machine
+### Updating Parameters and State Machine
 Change parameter values and update the state machine, typically within your application's update loop.
 
 ```csharp
@@ -141,8 +142,8 @@ stateMachine.Update();
 // Entered Idle State
 ```
 
-##Advanced Usage
-###Using Triggers
+## Advanced Usage
+### Using Triggers
 Triggers are parameters that reset after being consumed in a transition.
 
 ```csharp
@@ -169,7 +170,7 @@ stateMachine.Update();
 // Entered Jump State
 ```
 
-###Priority-Based Transitions
+### Priority-Based Transitions
 Manage transitions that can occur under the same conditions by assigning priorities.
 
 ```csharp
@@ -191,7 +192,7 @@ lowPriorityTransition.AddCondition("IsMoving", BoolParameterCondition.True);
 ```
 In this scenario, if both `Jump` and `IsMoving` conditions are true, the state machine will transition to `jumpState` due to its higher priority (lower priority value).
 
-###Condition Operations
+### Condition Operations
 Specify whether all conditions need to be met (`WhenAll`) or any of them (`WhenAny`) for a transition.
 
 ```csharp
@@ -216,7 +217,7 @@ transitionAny.AddCondition("IsMoving", BoolParameterCondition.True);
 transitionAny.AddCondition("Speed", FloatParameterCondition.Greater, 0.5f);
 ```
 
-###Subscribing to Events
+### Subscribing to Events
 Monitor state machine events like start, stop, and transitions, as well as state-specific events.
 
 ```csharp
@@ -233,13 +234,13 @@ idleState.OnStateEnter += (state) => Console.WriteLine($"{state.Name} Entered");
 idleState.OnStateExit += (state) => Console.WriteLine($"{state.Name} Exited");
 ```
 
-##Notes
+## Notes
 - Ensure that all parameters used in conditions are added to the state machine using `AddParameter`.
 - The `SetTrigger`, `SetBool`, `SetInt`, and `SetFloat` methods automatically check for transitions after updating the parameter.
 - When connecting states, make sure to specify the correct direction using `NodeConnectionDirection.Unidirectional` or `NodeConnectionDirection.Bidirectional`.
 
-##License
+## License
 This project is licensed under the MIT License.
 
-##Contributing
+## Contributing
 Contributions are welcome! Please submit a pull request or open an issue for any bugs or feature requests.
