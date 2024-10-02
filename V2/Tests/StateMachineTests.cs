@@ -22,12 +22,12 @@ namespace LegendaryTools.StateMachineV2.Tests
             return stateMachine;
         }
 
-        private IState<string> CreateState(string name)
+        private IAdvancedState<string> CreateState(string name)
         {
             return new State<string>(name);
         }
 
-        private void ConnectStates(IState<string> from, IState<string> to,
+        private void ConnectStates(IAdvancedState<string> from, IAdvancedState<string> to,
             NodeConnectionDirection direction = NodeConnectionDirection.Unidirectional)
         {
             from.ConnectTo(to, 0, direction);
@@ -88,7 +88,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
 
             bool onEnterCalled = false;
@@ -108,7 +108,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("NonExistentState");
+            IAdvancedState<string> startState = CreateState("NonExistentState");
 
             // Act & Assert
             Assert.Throws<InvalidOperationException>(
@@ -121,7 +121,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
             stateMachine.Start(startState);
 
@@ -142,7 +142,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
             stateMachine.Start(startState);
 
@@ -180,14 +180,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Jump", ParameterType.Trigger);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Jump" trigger condition
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Jump");
 
             bool onEnterBCalled = false;
@@ -211,14 +211,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("IsRunning", ParameterType.Bool);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "IsRunning" condition set to true
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("IsRunning", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
@@ -242,14 +242,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Health", ParameterType.Int);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Health" > 50 condition
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
@@ -273,14 +273,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Speed", ParameterType.Float);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Speed" < 10.0f condition
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Speed", FloatParameterCondition.Less, 10.0f);
 
             bool onEnterBCalled = false;
@@ -317,7 +317,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
             stateMachine.Start(startState);
 
@@ -338,15 +338,15 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.AddParameter("Trigger", ParameterType.Trigger);
 
             // Connect StateA to StateB with "Trigger" condition
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Trigger");
 
             bool onExitCalled = false;
@@ -374,14 +374,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("Health", ParameterType.Int);
             stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Health" > 50 and "IsAlive" == true conditions
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
@@ -413,14 +413,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("Health", ParameterType.Int);
             stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Health" > 50 and "IsAlive" == true conditions
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
@@ -445,10 +445,10 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
 
-            IState<string> anyState = stateMachine.AnyState;
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> anyState = stateMachine.AnyState;
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
@@ -457,7 +457,7 @@ namespace LegendaryTools.StateMachineV2.Tests
 
             // Connect AnyState to StateC with "Trigger" condition
             ConnectStates(anyState, stateC);
-            StateConnection<string> connection = (StateConnection<string>)anyState.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)anyState.OutboundConnections[0];
             connection.AddCondition("Trigger");
             stateMachine.Start(stateA);
 
@@ -509,7 +509,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
             stateMachine.Start(startState);
 
@@ -526,7 +526,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> state = CreateState("NewState");
+            IAdvancedState<string> state = CreateState("NewState");
 
             // Act
             stateMachine.Add(state);
@@ -541,7 +541,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> state = CreateState("RemovableState");
+            IAdvancedState<string> state = CreateState("RemovableState");
             stateMachine.Add(state);
 
             // Act
@@ -558,7 +558,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> state = CreateState("NonExistentState");
+            IAdvancedState<string> state = CreateState("NonExistentState");
 
             // Act
             bool removed = stateMachine.Remove(state);
@@ -633,12 +633,12 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Health", ParameterType.Int);
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
@@ -672,12 +672,12 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("IsRunning", ParameterType.Bool);
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("IsRunning", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
@@ -702,12 +702,12 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
 
             Assert.Throws<InvalidOperationException>(() => connection.AddCondition("NonExistentParam"),
                 "Setting a non-existent parameter should throw InvalidOperationException.");
@@ -731,21 +731,21 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("Condition1", ParameterType.Bool);
             stateMachine.AddParameter("Condition2", ParameterType.Bool);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
 
             // Connect StateA to StateB with Condition1 == true
             ConnectStates(stateA, stateB);
-            StateConnection<string> connectionAB = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAB = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connectionAB.AddCondition("Condition1", BoolParameterCondition.True);
 
             // Connect StateA to StateC with Condition2 == true
             ConnectStates(stateA, stateC);
-            StateConnection<string> connectionAC = (StateConnection<string>)stateA.OutboundConnections[1];
+            AdvancedStateConnection<string> connectionAC = (AdvancedStateConnection<string>)stateA.OutboundConnections[1];
             connectionAC.AddCondition("Condition2", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
@@ -775,14 +775,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("Health", ParameterType.Int);
             stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "Health" > 50 AND "IsAlive" == true
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
@@ -811,10 +811,10 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
-            IState<string> stateD = CreateState("StateD");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> stateD = CreateState("StateD");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
@@ -864,9 +864,9 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
@@ -891,13 +891,13 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("GoToB", ParameterType.Trigger);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("GoToB");
 
             List<string> eventOrder = new List<string>();
@@ -926,13 +926,13 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Trigger", ParameterType.Trigger);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             ConnectStates(stateA, stateB);
-            StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connection.AddCondition("Trigger");
 
             bool onEnterBCalled = false;
@@ -951,7 +951,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
 
             int onEnterCallCount = 0;
@@ -973,7 +973,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> startState = CreateState("StartState");
+            IAdvancedState<string> startState = CreateState("StartState");
             stateMachine.Add(startState);
             stateMachine.Start(startState);
 
@@ -999,19 +999,19 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("GoToB", ParameterType.Trigger);
             stateMachine.AddParameter("GoToA", ParameterType.Trigger);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with "GoToB" condition
             ConnectStates(stateA, stateB);
-            StateConnection<string> connectionAB = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAB = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connectionAB.AddCondition("GoToB");
 
             // Connect StateB to StateA with "GoToA" condition
             ConnectStates(stateB, stateA);
-            StateConnection<string> connectionBA = (StateConnection<string>)stateB.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionBA = (AdvancedStateConnection<string>)stateB.OutboundConnections[0];
             connectionBA.AddCondition("GoToA");
 
             int onEnterBCalled = 0;
@@ -1042,21 +1042,21 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("IsAlive", ParameterType.Bool);
             stateMachine.AddParameter("Speed", ParameterType.Float);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
 
             // Connect StateA to StateB with Health > 50
             ConnectStates(stateA, stateB);
-            StateConnection<string> connectionAB = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAB = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connectionAB.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             // Connect StateA to StateC with Speed > 10
             ConnectStates(stateA, stateC);
-            StateConnection<string> connectionAC = (StateConnection<string>)stateA.OutboundConnections[1];
+            AdvancedStateConnection<string> connectionAC = (AdvancedStateConnection<string>)stateA.OutboundConnections[1];
             connectionAC.AddCondition("Speed", FloatParameterCondition.Greater, 10.0f);
 
             bool onEnterBCalled = false;
@@ -1086,14 +1086,14 @@ namespace LegendaryTools.StateMachineV2.Tests
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
             stateMachine.AddParameter("Health", ParameterType.Int);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
             // Connect StateA to StateB with Health > 50
             ConnectStates(stateA, stateB);
-            StateConnection<string> connectionAB = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAB = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connectionAB.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
@@ -1119,22 +1119,22 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.AddParameter("TriggerA", ParameterType.Trigger);
             stateMachine.AddParameter("TriggerAny", ParameterType.Trigger);
 
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> stateC = CreateState("StateC");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateC = CreateState("StateC");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
 
             // Connect StateA to StateB with TriggerA
             ConnectStates(stateA, stateB);
-            StateConnection<string> connectionAB = (StateConnection<string>)stateA.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAB = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
             connectionAB.AddCondition("TriggerA");
 
             // Connect AnyState to StateC with TriggerAny
             ConnectStates(stateMachine.AnyState, stateC);
-            StateConnection<string> connectionAnyC =
-                (StateConnection<string>)stateMachine.AnyState.OutboundConnections[0];
+            AdvancedStateConnection<string> connectionAnyC =
+                (AdvancedStateConnection<string>)stateMachine.AnyState.OutboundConnections[0];
             connectionAnyC.AddCondition("TriggerAny");
 
             bool onEnterBCalled = false;
@@ -1209,9 +1209,9 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
-            IState<string> anyState = stateMachine.AnyState;
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> anyState = stateMachine.AnyState;
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
@@ -1230,8 +1230,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine<string> stateMachine = CreateSimpleStateMachine();
-            IState<string> stateA = CreateState("StateA");
-            IState<string> stateB = CreateState("StateB");
+            IAdvancedState<string> stateA = CreateState("StateA");
+            IAdvancedState<string> stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
 
@@ -1239,7 +1239,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             Assert.Throws<InvalidOperationException>(() =>
             {
                 ConnectStates(stateA, stateB);
-                StateConnection<string> connection = (StateConnection<string>)stateA.OutboundConnections[0];
+                AdvancedStateConnection<string> connection = (AdvancedStateConnection<string>)stateA.OutboundConnections[0];
                 connection.AddCondition("NonExistentParam");
             }, "Adding a condition with a non-existent parameter should throw InvalidOperationException.");
         }

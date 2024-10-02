@@ -5,19 +5,33 @@ using UnityEngine;
 
 namespace LegendaryTools.StateMachineV2
 {
-    public interface IHardState<T> where T : struct, Enum, IConvertible
+    public interface IState
     {
-        string Name { get; }
-        
-        T Type { get; }
-        
+        public string Name { get; }
         public event Action OnStateEnter;
         public event Action OnStateUpdate;
         public event Action OnStateExit;
-        
+
         internal void InvokeOnStateEnter();
         internal void InvokeOnStateUpdate();
         internal void InvokeOnStateExit();
+    }
+    
+    public interface IStateMachine<T> where T : IEquatable<T>
+    {
+        string Name { get; set; }
+        IState CurrentState { get; }
+        bool IsRunning { get; }
+        
+        void Start(IState startState);
+        void Stop();
+        void Update();
+        void SetTrigger(T trigger);
+    }
+    
+    public interface IHardState<T> : IState where T : struct, Enum, IConvertible
+    {
+        T Type { get; }
     }
     
     public class HardState<T> : IHardState<T> where T : struct, Enum, IConvertible
@@ -30,17 +44,17 @@ namespace LegendaryTools.StateMachineV2
         public event Action OnStateUpdate;
         public event Action OnStateExit;
         
-        void IHardState<T>.InvokeOnStateEnter()
+        void IState.InvokeOnStateEnter()
         {
             OnStateEnter?.Invoke();
         }
 
-        void IHardState<T>.InvokeOnStateUpdate()
+        void IState.InvokeOnStateUpdate()
         {
             OnStateUpdate?.Invoke();
         }
 
-        void IHardState<T>.InvokeOnStateExit()
+        void IState.InvokeOnStateExit()
         {
             OnStateExit?.Invoke();
         }
@@ -51,26 +65,24 @@ namespace LegendaryTools.StateMachineV2
         }
     }
 
-    public interface IHardStateMachine<T> where T : struct, Enum, IConvertible, IEquatable<T>
+    public interface IHardStateMachine<T> : IStateMachine<T> where T : struct, Enum, IConvertible, IEquatable<T>
     {
-        string Name { get; }
-        bool IsRunning { get; }
-        IHardState<T> CurrentState { get; }
+        new IHardState<T> CurrentState { get; }
         Dictionary<T, IHardState<T>> States { get; }
         void Start(IHardState<T> startState);
-        void Stop();
-        void Update();
-        void SetTrigger(T trigger);
     }
 
     public class HardStateMachine<T> : IHardStateMachine<T> where T : struct, Enum, IConvertible, IEquatable<T>
     {
         public string Name => typeof(T).Name;
+        
         public bool IsRunning => CurrentState != null;
+        string IStateMachine<T>.Name { get; set; }
         public IHardState<T> CurrentState { get; protected set; }
+        IState IStateMachine<T>.CurrentState => CurrentState;
         public Dictionary<T, IHardState<T>> States { get; }
 
-        private readonly Func<IHardState<T>, IHardState<T>, bool> allowTransition;
+        protected readonly Func<IHardState<T>, IHardState<T>, bool> allowTransition;
         
         public HardStateMachine(Func<IHardState<T>, IHardState<T>, bool> allowTransition = null)
         {
@@ -89,6 +101,12 @@ namespace LegendaryTools.StateMachineV2
             if(IsRunning) return;
             if (!States.TryGetValue(startState.Type, out IHardState<T> state)) return;
             CurrentState = startState;
+        }
+
+        public void Start(IState startState)
+        {
+            if (startState is not IHardState<T> startHardState) return;
+            Start(startHardState);
         }
 
         public void Stop()
@@ -110,7 +128,7 @@ namespace LegendaryTools.StateMachineV2
             Transit(CurrentState, toState);
         }
         
-        private void Transit(IHardState<T> fromState, IHardState<T> toState)
+        protected void Transit(IHardState<T> fromState, IHardState<T> toState)
         {
             if (allowTransition != null && !allowTransition.Invoke(fromState, toState)) return;
             fromState?.InvokeOnStateExit();
@@ -119,45 +137,29 @@ namespace LegendaryTools.StateMachineV2
         }
     }
     
-    public interface IStateMachine<T> : IGraph where T : IEquatable<T>
+    public interface IAdvancedStateMachine<T> : IGraph, IStateMachine<T> where T : IEquatable<T>
     {
-        string Name { get; set; }
-        IState<T> AnyState { get; }
-        IState<T> CurrentState { get; }
-        bool IsRunning { get; }
+        IAdvancedState<T> AnyState { get; }
         
         Dictionary<T, ParameterState<T>> ParameterValues { get; }
 
-        void Start(IState<T> startState);
-        void Stop();
-        void Update();
+        void Start(IAdvancedState<T> startState);
         
         void AddParameter(T parameterName, ParameterType parameterType);
         bool RemoveParameter(T parameterName, ParameterType parameterType);
         
-        void SetTrigger(T name);
         void SetBool(T name, bool value);
         void SetInt(T name, int value);
         void SetFloat(T name, float value);
     }
 
-    public interface IState<T> : INode where T : IEquatable<T>
+    public interface IAdvancedState<T> : INode, IState where T : IEquatable<T>
     {
-        public string Name { get; set; }
-
-        IStateConnection<T> ConnectTo(INode to, int priority, NodeConnectionDirection newDirection, 
+        IAdvancedStateConnection<T> ConnectTo(INode to, int priority, NodeConnectionDirection newDirection, 
             ConditionOperation conditionOperation = ConditionOperation.WhenAll);
-        
-        public event Action OnStateEnter;
-        public event Action OnStateUpdate;
-        public event Action OnStateExit;
-
-        internal void InvokeOnStateEnter();
-        internal void InvokeOnStateUpdate();
-        internal void InvokeOnStateExit();
     }
     
-    public interface IStateConnection<T> : INodeConnection, IComparable<IStateConnection<T>> where T : IEquatable<T>
+    public interface IAdvancedStateConnection<T> : INodeConnection, IComparable<IAdvancedStateConnection<T>> where T : IEquatable<T>
     {
         List<Condition<T>> Conditions { get; }
         ConditionOperation ConditionOperation { get; internal set; }
@@ -332,19 +334,19 @@ namespace LegendaryTools.StateMachineV2
         }
     }
 
-    public class StateConnection<T> : NodeConnection, IStateConnection<T> where T : IEquatable<T>
+    public class AdvancedStateConnection<T> : NodeConnection, IAdvancedStateConnection<T> where T : IEquatable<T>
     {
         public string Name { get; set; }
 
         private int priority;
-        int IStateConnection<T>.Priority
+        int IAdvancedStateConnection<T>.Priority
         {
             get => priority;
             set => priority = value;
         }
         
         private ConditionOperation conditionOperation;
-        ConditionOperation IStateConnection<T>.ConditionOperation
+        ConditionOperation IAdvancedStateConnection<T>.ConditionOperation
         {
             get => conditionOperation;
             set => conditionOperation = value;
@@ -353,7 +355,7 @@ namespace LegendaryTools.StateMachineV2
         public event Action OnTransit;
         public List<Condition<T>> Conditions { get; protected set; } = new List<Condition<T>>();
 
-        public StateConnection(INode fromNode, INode toNode, int priority, NodeConnectionDirection direction,
+        public AdvancedStateConnection(INode fromNode, INode toNode, int priority, NodeConnectionDirection direction,
             ConditionOperation conditionOperation = ConditionOperation.WhenAll) : base(fromNode, toNode, direction)
         {
             this.priority = priority;
@@ -387,8 +389,8 @@ namespace LegendaryTools.StateMachineV2
         private void ValidateParam(T name, ParameterType expectedDefinition)
         {
             IGraph rootGraph = FromNode.Owner.GraphHierarchy.Length == 0 ? FromNode.Owner : FromNode.Owner.GraphHierarchy[0];
-            if(rootGraph is not IStateMachine<T> rootStateMachine) 
-                throw new InvalidOperationException($"Root {nameof(StateMachine<T>)} does not implements {nameof(IStateMachine<T>)}.");
+            if(rootGraph is not IAdvancedStateMachine<T> rootStateMachine) 
+                throw new InvalidOperationException($"Root {nameof(StateMachine<T>)} does not implements {nameof(IAdvancedStateMachine<T>)}.");
             StateMachine<T>.ValidateParam(name, rootStateMachine, expectedDefinition, out ParameterState<T> parameterState);
         }
 
@@ -443,19 +445,19 @@ namespace LegendaryTools.StateMachineV2
 
         }
         
-        void IStateConnection<T>.InvokeOnTransit()
+        void IAdvancedStateConnection<T>.InvokeOnTransit()
         {
             OnTransited();
             OnTransit?.Invoke();
         }
 
-        public int CompareTo(IStateConnection<T> other)
+        public int CompareTo(IAdvancedStateConnection<T> other)
         {
             return priority.CompareTo(other.Priority);
         }
     }
     
-    public class State<T> : Node, IState<T> where T : IEquatable<T>
+    public class State<T> : Node, IAdvancedState<T> where T : IEquatable<T>
     {
         public string Name { get; set; }
         
@@ -470,7 +472,7 @@ namespace LegendaryTools.StateMachineV2
         
         protected override INodeConnection ConstructConnection(INode fromNode, INode toNode, NodeConnectionDirection direction)
         {
-            return new StateConnection<T>(fromNode, toNode, 0, direction);
+            return new AdvancedStateConnection<T>(fromNode, toNode, 0, direction);
         }
 
         public override INodeConnection ConnectTo(INode to, NodeConnectionDirection newDirection)
@@ -478,12 +480,12 @@ namespace LegendaryTools.StateMachineV2
             throw new InvalidOperationException($"Call you should call signature {nameof(ConnectTo)}(INode to, int priority, NodeConnectionDirection newDirection, ConditionOperation conditionOperation = ConditionOperation.WhenAll) instead.");
         }
 
-        public virtual IStateConnection<T> ConnectTo(INode to, int priority, NodeConnectionDirection newDirection, 
+        public virtual IAdvancedStateConnection<T> ConnectTo(INode to, int priority, NodeConnectionDirection newDirection, 
             ConditionOperation conditionOperation = ConditionOperation.WhenAll)
         {
             INodeConnection nodeConnection = base.ConnectTo(to, newDirection);
-            if (nodeConnection is not IStateConnection<T> stateConnection) 
-                throw new InvalidOperationException($"nodeConnection does not implement {nameof(IStateConnection<T>)}. Did you forget to override method {nameof(ConstructConnection)} ?");
+            if (nodeConnection is not IAdvancedStateConnection<T> stateConnection) 
+                throw new InvalidOperationException($"nodeConnection does not implement {nameof(IAdvancedStateConnection<T>)}. Did you forget to override method {nameof(ConstructConnection)} ?");
 
             stateConnection.ConditionOperation = conditionOperation;
             stateConnection.Priority = priority;
@@ -502,45 +504,54 @@ namespace LegendaryTools.StateMachineV2
         {
         }
         
-        void IState<T>.InvokeOnStateEnter()
+        void IState.InvokeOnStateEnter()
         {
             OnStateEntered();
             OnStateEnter?.Invoke();
         }
 
-        void IState<T>.InvokeOnStateUpdate()
+        void IState.InvokeOnStateUpdate()
         {
             OnStateUpdated();
             OnStateUpdate?.Invoke();
         }
 
-        void IState<T>.InvokeOnStateExit()
+        void IState.InvokeOnStateExit()
         {
             OnStateExited();
             OnStateExit?.Invoke();
         }
     }
     
-    public class StateMachine<T> : GraphV2.Graph, IStateMachine<T> where T : IEquatable<T>
+    public class StateMachine<T> : GraphV2.Graph, IAdvancedStateMachine<T> where T : IEquatable<T>
     {
         public string Name { get; set; }
-        public IState<T> AnyState { get; }
+        public IAdvancedState<T> AnyState { get; }
+        
         public bool IsRunning => CurrentState != null;
-        public IState<T> CurrentState { get; protected set; }
+        public IAdvancedState<T> CurrentState { get; protected set; }
+        IState IStateMachine<T>.CurrentState => CurrentState;
 
         public Dictionary<T, ParameterState<T>> ParameterValues { get; protected set; } = new Dictionary<T, ParameterState<T>>();
         
-        public StateMachine(IState<T> anyState, string name = "")
+        public StateMachine(IAdvancedState<T> anyState, string name = "")
         {
             Name = name;
             AnyState = anyState;
         }
         
-        public void Start(IState<T> startState)
+        public void Start(IAdvancedState<T> startState)
         {
             if (IsRunning) return;
             if (!Contains(startState)) throw new InvalidOperationException($"{nameof(startState)} must be a state inside of {Name} {nameof(StateMachine<T>)}");
             Transit(null, startState, null);
+        }
+
+        public void Start(IState startState)
+        {
+            if (startState is not IAdvancedState<T> startAdvancedState) 
+                throw new InvalidOperationException($"{nameof(startState)} does not implements {nameof(IAdvancedState<T>)}");
+            Start(startAdvancedState);
         }
 
         public void Stop()
@@ -555,7 +566,7 @@ namespace LegendaryTools.StateMachineV2
             if(IsRunning) CurrentState.InvokeOnStateUpdate();
         }
 
-        private void Transit(IState<T> fromState, IState<T> toState, IStateConnection<T> transition)
+        protected void Transit(IAdvancedState<T> fromState, IAdvancedState<T> toState, IAdvancedStateConnection<T> transition)
         {
             fromState?.InvokeOnStateExit();
             transition?.InvokeOnTransit();
@@ -620,22 +631,22 @@ namespace LegendaryTools.StateMachineV2
                 CheckTriggerForState(AnyState);
         }
         
-        private bool CheckTriggerForState(IState<T> state)
+        protected bool CheckTriggerForState(IAdvancedState<T> state)
         {
-            List<(IState<T>, IStateConnection<T>)> availableTransitions = new List<(IState<T>, IStateConnection<T>)>();
+            List<(IAdvancedState<T>, IAdvancedStateConnection<T>)> availableTransitions = new List<(IAdvancedState<T>, IAdvancedStateConnection<T>)>();
             foreach (INodeConnection nodeConnection in state.OutboundConnections)
             {
-                if (nodeConnection is not IStateConnection<T> stateConnection)
+                if (nodeConnection is not IAdvancedStateConnection<T> stateConnection)
                 {
-                    Debug.LogWarning($"[{nameof(StateMachine<T>)}:{nameof(SetTrigger)}] NodeConnection does not implements {nameof(IStateConnection<T>)} on {Name}");
+                    Debug.LogWarning($"[{nameof(StateMachine<T>)}:{nameof(SetTrigger)}] NodeConnection does not implements {nameof(IAdvancedStateConnection<T>)} on {Name}");
                     continue;
                 }
 
                 if (!stateConnection.Evaluate(ParameterValues)) continue;
                 INode toNode = stateConnection.GetOut(CurrentState);
-                if (toNode is not IState<T> toState)
+                if (toNode is not IAdvancedState<T> toState)
                 {
-                    Debug.LogWarning($"[{nameof(StateMachine<T>)}:{nameof(CheckTriggerForState)}] toNode does not implements {nameof(IState<T>)} on {Name}");
+                    Debug.LogWarning($"[{nameof(StateMachine<T>)}:{nameof(CheckTriggerForState)}] toNode does not implements {nameof(IAdvancedState<T>)} on {Name}");
                     continue;
                 }
                 availableTransitions.Add((toState, stateConnection));
@@ -652,7 +663,7 @@ namespace LegendaryTools.StateMachineV2
             return true;
         }
         
-        internal static void ValidateParam(T name, IStateMachine<T> rootStateMachine, ParameterType expectedDefinition, out ParameterState<T> parameterState)
+        internal static void ValidateParam(T name, IAdvancedStateMachine<T> rootStateMachine, ParameterType expectedDefinition, out ParameterState<T> parameterState)
         {
             if (!rootStateMachine.ParameterValues.TryGetValue(name, out parameterState)) 
                 throw new InvalidOperationException($"{name} parameter does not exists in {rootStateMachine.Name} {nameof(StateMachine<T>)}");
