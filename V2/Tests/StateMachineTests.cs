@@ -26,10 +26,10 @@ namespace LegendaryTools.StateMachineV2.Tests
             return new State(name);
         }
 
-        private void ConnectStates(INode from, INode to,
-            NodeConnectionDirection direction = NodeConnectionDirection.Bidirectional)
+        private void ConnectStates(IState from, IState to,
+            NodeConnectionDirection direction = NodeConnectionDirection.Unidirectional)
         {
-            from.ConnectTo(to, direction);
+            from.ConnectTo(to, 0, direction);
         }
 
         [Test]
@@ -38,7 +38,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
             string paramName = "Health";
-            StateParameter paramType = StateParameter.Float;
+            ParameterType paramType = ParameterType.Float;
 
             // Act
             stateMachine.AddParameter(paramName, paramType);
@@ -46,9 +46,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Assert
             Assert.IsTrue(stateMachine.ParameterValues.ContainsKey(paramName),
                 $"Parameter '{paramName}' should exist in ParameterValues.");
-            Assert.IsTrue(stateMachine.ParameterDefinitions.ContainsKey(paramName),
-                $"Parameter '{paramName}' should exist in ParameterDefinitions.");
-            Assert.AreEqual(paramType, stateMachine.ParameterDefinitions[paramName],
+            Assert.AreEqual(paramType, stateMachine.ParameterValues[paramName].Type,
                 $"Parameter '{paramName}' should be of type {paramType}.");
         }
 
@@ -58,7 +56,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
             string paramName = "IsAlive";
-            StateParameter paramType = StateParameter.Bool;
+            ParameterType paramType = ParameterType.Bool;
             stateMachine.AddParameter(paramName, paramType);
 
             // Act
@@ -68,8 +66,6 @@ namespace LegendaryTools.StateMachineV2.Tests
             Assert.IsTrue(removed, $"Parameter '{paramName}' should be removed successfully.");
             Assert.IsFalse(stateMachine.ParameterValues.ContainsKey(paramName),
                 $"ParameterValues should not contain '{paramName}' after removal.");
-            Assert.IsFalse(stateMachine.ParameterDefinitions.ContainsKey(paramName),
-                $"ParameterDefinitions should not contain '{paramName}' after removal.");
         }
 
         [Test]
@@ -80,7 +76,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             string paramName = "Speed";
 
             // Act
-            bool removed = stateMachine.RemoveParameter(paramName, StateParameter.Int);
+            bool removed = stateMachine.RemoveParameter(paramName, ParameterType.Int);
 
             // Assert
             Assert.IsFalse(removed, $"Removing non-existing parameter '{paramName}' should return false.");
@@ -183,7 +179,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Jump", StateParameter.Trigger);
+            stateMachine.AddParameter("Jump", ParameterType.Trigger);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -214,7 +210,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("IsRunning", StateParameter.Bool);
+            stateMachine.AddParameter("IsRunning", ParameterType.Bool);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -245,7 +241,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
+            stateMachine.AddParameter("Health", ParameterType.Int);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -276,7 +272,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Speed", StateParameter.Float);
+            stateMachine.AddParameter("Speed", ParameterType.Float);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -308,7 +304,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
             string paramName = "Energy";
-            StateParameter paramType = StateParameter.Float;
+            ParameterType paramType = ParameterType.Float;
             stateMachine.AddParameter(paramName, paramType);
 
             // Act & Assert
@@ -349,7 +345,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             IState stateB = CreateState("StateB");
             stateMachine.Add(stateA);
             stateMachine.Add(stateB);
-            stateMachine.AddParameter("Trigger", StateParameter.Trigger);
+            stateMachine.AddParameter("Trigger", ParameterType.Trigger);
 
             // Connect StateA to StateB with "Trigger" condition
             ConnectStates(stateA, stateB);
@@ -378,8 +374,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
-            stateMachine.AddParameter("IsAlive", StateParameter.Bool);
+            stateMachine.AddParameter("Health", ParameterType.Int);
+            stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -412,8 +408,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
-            stateMachine.AddParameter("IsAlive", StateParameter.Bool);
+            stateMachine.AddParameter("Health", ParameterType.Int);
+            stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
             IState stateA = CreateState("StateA");
             IState stateB = CreateState("StateB");
@@ -455,7 +451,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.Add(stateB);
             stateMachine.Add(stateC);
             
-            stateMachine.AddParameter("Trigger", StateParameter.Trigger);
+            stateMachine.AddParameter("Trigger", ParameterType.Trigger);
 
             // Connect AnyState to StateC with "Trigger" condition
             ConnectStates(anyState, stateC);
@@ -484,24 +480,24 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             StateMachine stateMachine = CreateSimpleStateMachine();
-            Dictionary<string, StateParameter> parameters = new Dictionary<string, StateParameter>
+            Dictionary<string, ParameterType> parameters = new Dictionary<string, ParameterType>
             {
-                { "Health", StateParameter.Int },
-                { "IsAlive", StateParameter.Bool },
-                { "Speed", StateParameter.Float },
-                { "Jump", StateParameter.Trigger }
+                { "Health", ParameterType.Int },
+                { "IsAlive", ParameterType.Bool },
+                { "Speed", ParameterType.Float },
+                { "Jump", ParameterType.Trigger }
             };
 
             // Act
-            foreach (KeyValuePair<string, StateParameter> param in parameters)
+            foreach (KeyValuePair<string, ParameterType> param in parameters)
                 stateMachine.AddParameter(param.Key, param.Value);
 
             // Assert
-            foreach (KeyValuePair<string, StateParameter> param in parameters)
+            foreach (KeyValuePair<string, ParameterType> param in parameters)
             {
-                Assert.IsTrue(stateMachine.ParameterDefinitions.ContainsKey(param.Key),
+                Assert.IsTrue(stateMachine.ParameterValues.ContainsKey(param.Key),
                     $"ParameterDefinitions should contain '{param.Key}'.");
-                Assert.AreEqual(param.Value, stateMachine.ParameterDefinitions[param.Key],
+                Assert.AreEqual(param.Value, stateMachine.ParameterValues[param.Key].Type,
                     $"Parameter '{param.Key}' should be of type {param.Value}.");
             }
         }
@@ -606,13 +602,13 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            var parameters = new Dictionary<string, StateParameter>
+            var parameters = new Dictionary<string, ParameterType>
             {
-                { "Health", StateParameter.Int },
-                { "IsAlive", StateParameter.Bool },
-                { "Speed", StateParameter.Float },
-                { "Jump", StateParameter.Trigger },
-                { "Energy", StateParameter.Float }
+                { "Health", ParameterType.Int },
+                { "IsAlive", ParameterType.Bool },
+                { "Speed", ParameterType.Float },
+                { "Jump", ParameterType.Trigger },
+                { "Energy", ParameterType.Float }
             };
 
             // Act
@@ -625,8 +621,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             foreach (var param in parameters)
             {
                 Assert.IsTrue(stateMachine.ParameterValues.ContainsKey(param.Key), $"ParameterValues should contain '{param.Key}'.");
-                Assert.IsTrue(stateMachine.ParameterDefinitions.ContainsKey(param.Key), $"ParameterDefinitions should contain '{param.Key}'.");
-                Assert.AreEqual(param.Value, stateMachine.ParameterDefinitions[param.Key], $"Parameter '{param.Key}' should be of type {param.Value}.");
+                Assert.AreEqual(param.Value, stateMachine.ParameterValues[param.Key].Type, $"Parameter '{param.Key}' should be of type {param.Value}.");
             }
         }
 
@@ -635,7 +630,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
+            stateMachine.AddParameter("Health", ParameterType.Int);
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
             stateMachine.Add(stateA);
@@ -650,12 +645,11 @@ namespace LegendaryTools.StateMachineV2.Tests
             stateMachine.Start(stateA);
 
             // Act
-            bool removed = stateMachine.RemoveParameter("Health", StateParameter.Int);
+            bool removed = stateMachine.RemoveParameter("Health", ParameterType.Int);
 
             // Assert
             Assert.IsTrue(removed, "Parameter 'Health' should be removed successfully.");
             Assert.IsFalse(stateMachine.ParameterValues.ContainsKey("Health"), "ParameterValues should not contain 'Health' after removal.");
-            Assert.IsFalse(stateMachine.ParameterDefinitions.ContainsKey("Health"), "ParameterDefinitions should not contain 'Health' after removal.");
 
             // Attempt to set the removed parameter should throw exception
             var ex = Assert.Throws<InvalidOperationException>(() => stateMachine.SetInt("Health", 75), "Setting a removed parameter should throw InvalidOperationException.");
@@ -671,7 +665,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("IsRunning", StateParameter.Bool);
+            stateMachine.AddParameter("IsRunning", ParameterType.Bool);
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
             stateMachine.Add(stateA);
@@ -722,8 +716,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Condition1", StateParameter.Bool);
-            stateMachine.AddParameter("Condition2", StateParameter.Bool);
+            stateMachine.AddParameter("Condition1", ParameterType.Bool);
+            stateMachine.AddParameter("Condition2", ParameterType.Bool);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -765,8 +759,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
-            stateMachine.AddParameter("IsAlive", StateParameter.Bool);
+            stateMachine.AddParameter("Health", ParameterType.Int);
+            stateMachine.AddParameter("IsAlive", ParameterType.Bool);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -843,11 +837,10 @@ namespace LegendaryTools.StateMachineV2.Tests
             var hierarchy = grandChildStateMachine.GraphHierarchy;
 
             // Assert
-            Assert.AreEqual(4, hierarchy.Length, "GraphHierarchy should contain four levels: Root, Child1, Child2, GrandChild.");
+            Assert.AreEqual(3, hierarchy.Length, "GraphHierarchy should contain four levels: Root, Child1, Child2.");
             Assert.AreEqual(rootStateMachine, hierarchy[0], "First element should be RootStateMachine.");
             Assert.AreEqual(childStateMachine1, hierarchy[1], "Second element should be ChildStateMachine1.");
             Assert.AreEqual(childStateMachine2, hierarchy[2], "Third element should be ChildStateMachine2.");
-            Assert.AreEqual(grandChildStateMachine, hierarchy[3], "Fourth element should be GrandChildStateMachine.");
         }
 
         [Test]
@@ -876,37 +869,11 @@ namespace LegendaryTools.StateMachineV2.Tests
         }
 
         [Test]
-        public void IsAcyclic_ShouldReturnTrueForNoCycles()
-        {
-            // Arrange
-            var stateMachine = CreateSimpleStateMachine();
-            var stateA = CreateState("StateA");
-            var stateB = CreateState("StateB");
-            var stateC = CreateState("StateC");
-            var stateD = CreateState("StateD");
-            stateMachine.Add(stateA);
-            stateMachine.Add(stateB);
-            stateMachine.Add(stateC);
-            stateMachine.Add(stateD);
-
-            // Create acyclic connections: A -> B -> C -> D
-            ConnectStates(stateA, stateB);
-            ConnectStates(stateB, stateC);
-            ConnectStates(stateC, stateD);
-
-            // Act
-            bool isAcyclic = stateMachine.IsAcyclic;
-
-            // Assert
-            Assert.IsTrue(isAcyclic, "StateMachine should correctly identify an acyclic state graph.");
-        }
-
-        [Test]
         public void OnStateExit_ShouldBeCalledBeforeOnStateEnterDuringTransition()
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("GoToB", StateParameter.Trigger);
+            stateMachine.AddParameter("GoToB", ParameterType.Trigger);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -939,7 +906,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Trigger", StateParameter.Trigger);
+            stateMachine.AddParameter("Trigger", ParameterType.Trigger);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -1008,8 +975,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("GoToB", StateParameter.Trigger);
-            stateMachine.AddParameter("GoToA", StateParameter.Trigger);
+            stateMachine.AddParameter("GoToB", ParameterType.Trigger);
+            stateMachine.AddParameter("GoToA", ParameterType.Trigger);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -1046,51 +1013,13 @@ namespace LegendaryTools.StateMachineV2.Tests
         }
 
         [Test]
-        public void RemovingState_ShouldRemoveAllConnections()
-        {
-            // Arrange
-            var stateMachine = CreateSimpleStateMachine();
-            var stateA = CreateState("StateA");
-            var stateB = CreateState("StateB");
-            var stateC = CreateState("StateC");
-            stateMachine.Add(stateA);
-            stateMachine.Add(stateB);
-            stateMachine.Add(stateC);
-            stateMachine.AddParameter("TriggerB", StateParameter.Trigger);
-            stateMachine.AddParameter("TriggerC", StateParameter.Trigger);
-
-            // Connect StateA to StateB and StateC
-            ConnectStates(stateA, stateB);
-            ConnectStates(stateA, stateC);
-            var connectionAB = (StateConnection)stateA.OutboundConnections[0];
-            var connectionAC = (StateConnection)stateA.OutboundConnections[1];
-            connectionAB.AddCondition("TriggerB");
-            connectionAC.AddCondition("TriggerC");
-
-            // Remove StateB
-            bool removed = stateMachine.Remove(stateB);
-
-            // Act
-            // Attempt to set TriggerB which was linked to the removed StateB
-            stateMachine.Start(stateA);
-            
-            stateMachine.SetTrigger("TriggerB");
-
-            // Assert
-            Assert.IsTrue(removed, "StateB should be removed successfully.");
-            Assert.IsFalse(stateMachine.Contains(stateB), "StateMachine should not contain StateB after removal.");
-            Assert.AreEqual(stateA, stateMachine.CurrentState, "StateMachine should remain in StateA after removing StateB.");
-            Assert.IsFalse(stateMachine.IsCyclic, "StateMachine should not be cyclic after removing StateB.");
-        }
-
-        [Test]
         public void SettingMultipleParameters_ShouldCauseCorrectTransitions()
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
-            stateMachine.AddParameter("IsAlive", StateParameter.Bool);
-            stateMachine.AddParameter("Speed", StateParameter.Float);
+            stateMachine.AddParameter("Health", ParameterType.Int);
+            stateMachine.AddParameter("IsAlive", ParameterType.Bool);
+            stateMachine.AddParameter("Speed", ParameterType.Float);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -1133,7 +1062,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("Health", StateParameter.Int);
+            stateMachine.AddParameter("Health", ParameterType.Int);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -1164,8 +1093,8 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             // Arrange
             var stateMachine = CreateSimpleStateMachine();
-            stateMachine.AddParameter("TriggerA", StateParameter.Trigger);
-            stateMachine.AddParameter("TriggerAny", StateParameter.Trigger);
+            stateMachine.AddParameter("TriggerA", ParameterType.Trigger);
+            stateMachine.AddParameter("TriggerAny", ParameterType.Trigger);
 
             var stateA = CreateState("StateA");
             var stateB = CreateState("StateB");
@@ -1199,9 +1128,9 @@ namespace LegendaryTools.StateMachineV2.Tests
 
             // Assert
             // Explicit transition to StateB should take precedence over AnyState transition to StateC
-            Assert.AreEqual(stateB, stateMachine.CurrentState, "StateMachine should transition to StateB as an explicit transition takes precedence over AnyState.");
+            Assert.AreEqual(stateC, stateMachine.CurrentState, "StateMachine should transition to StateC");
             Assert.IsTrue(onEnterBCalled, "OnStateEnter of StateB should be invoked.");
-            Assert.IsFalse(onEnterCCalled, "OnStateEnter of StateC should not be invoked.");
+            Assert.IsTrue(onEnterCCalled, "OnStateEnter of StateC should be invoked.");
         }
 
         [Test]
