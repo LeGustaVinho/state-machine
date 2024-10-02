@@ -46,7 +46,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void Start_WithValidState_SetsCurrentStateAndIsRunning()
         {
             bool enterCalled = false;
-            stateA.OnStateEnter += () => enterCalled = true;
+            stateA.OnStateEnter += (state) => enterCalled = true;
 
             stateMachine.Start(stateA);
 
@@ -59,7 +59,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void Stop_WhenRunning_ClearsCurrentStateAndIsNotRunning()
         {
             bool exitCalled = false;
-            stateA.OnStateExit += () => exitCalled = true;
+            stateA.OnStateExit += (state) => exitCalled = true;
 
             stateMachine.Start(stateA);
             stateMachine.Stop();
@@ -83,7 +83,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void Update_WhenRunning_CallsOnStateUpdate()
         {
             bool updateCalled = false;
-            stateA.OnStateUpdate += () => updateCalled = true;
+            stateA.OnStateUpdate += (state) => updateCalled = true;
 
             stateMachine.Start(stateA);
             stateMachine.Update();
@@ -95,7 +95,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void Update_WhenNotRunning_DoesNotCallOnStateUpdate()
         {
             bool updateCalled = false;
-            stateA.OnStateUpdate += () => updateCalled = true;
+            stateA.OnStateUpdate += (state) => updateCalled = true;
 
             stateMachine.Update();
 
@@ -108,8 +108,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool exitCalled = false;
             bool enterCalled = false;
 
-            stateA.OnStateExit += () => exitCalled = true;
-            stateB.OnStateEnter += () => enterCalled = true;
+            stateA.OnStateExit += (state) => exitCalled = true;
+            stateB.OnStateEnter += (state) => enterCalled = true;
 
             stateMachine.Start(stateA);
             stateMachine.SetTrigger(TestStates.StateB);
@@ -158,7 +158,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void Start_WithIStateOverload_SetsCurrentState()
         {
             bool enterCalled = false;
-            stateA.OnStateEnter += () => enterCalled = true;
+            stateA.OnStateEnter += (state) => enterCalled = true;
 
             IState state = stateA;
             stateMachine.Start(state);
@@ -172,7 +172,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void OnStateEnter_CalledOnStart()
         {
             bool enterCalled = false;
-            stateB.OnStateEnter += () => enterCalled = true;
+            stateB.OnStateEnter += (state) => enterCalled = true;
 
             stateMachine.Start(stateB);
 
@@ -183,7 +183,7 @@ namespace LegendaryTools.StateMachineV2.Tests
         public void OnStateExit_CalledOnStop()
         {
             bool exitCalled = false;
-            stateC.OnStateExit += () => exitCalled = true;
+            stateC.OnStateExit += (state) => exitCalled = true;
 
             stateMachine.Start(stateC);
             stateMachine.Stop();
@@ -196,9 +196,9 @@ namespace LegendaryTools.StateMachineV2.Tests
         {
             List<TestStates> enteredStates = new List<TestStates>();
 
-            stateA.OnStateEnter += () => enteredStates.Add(TestStates.StateA);
-            stateB.OnStateEnter += () => enteredStates.Add(TestStates.StateB);
-            stateC.OnStateEnter += () => enteredStates.Add(TestStates.StateC);
+            stateA.OnStateEnter += (state) => enteredStates.Add(TestStates.StateA);
+            stateB.OnStateEnter += (state) => enteredStates.Add(TestStates.StateB);
+            stateC.OnStateEnter += (state) => enteredStates.Add(TestStates.StateC);
 
             stateMachine.Start(stateA);
             stateMachine.SetTrigger(TestStates.StateB);
@@ -269,7 +269,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool enterCalled = false;
             bool exitCalled = false;
 
-            stateB.OnStateEnter += () => enterCalled = true;
+            stateB.OnStateEnter += (state) => enterCalled = true;
             // No exit for null state
 
             stateMachine.Start(stateB);
@@ -284,7 +284,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool enterCalled = false;
             bool exitCalled = false;
 
-            stateA.OnStateExit += () => exitCalled = true;
+            stateA.OnStateExit += (state) => exitCalled = true;
             // No enter for null state
 
             stateMachine.Start(stateA);

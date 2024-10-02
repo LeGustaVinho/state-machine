@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using LegendaryTools.Graph;
 using UnityEngine;
 
-namespace LegendaryTools
+namespace LegendaryTools.StateMachine
 {
     public struct StateLog<TState, TTrigger>
     {

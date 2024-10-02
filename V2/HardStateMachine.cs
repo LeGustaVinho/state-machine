@@ -15,6 +15,10 @@ namespace LegendaryTools.StateMachineV2
 
         protected readonly Func<IHardState<T>, IHardState<T>, bool> allowTransition;
         
+        public event Action<IStateMachine<T>> OnStart;
+        public event Action<IStateMachine<T>> OnStop;
+        public event Action<IState, IState> OnTransit;
+        
         public HardStateMachine(Func<IHardState<T>, IHardState<T>, bool> allowTransition = null)
         {
             this.allowTransition = allowTransition;
@@ -33,6 +37,7 @@ namespace LegendaryTools.StateMachineV2
             if (!States.TryGetValue(startState.Type, out IHardState<T> state)) return;
             CurrentState = startState;
             Transit(null, startState);
+            OnStart?.Invoke(this);
         }
 
         public void Start(IState startState)
@@ -46,6 +51,7 @@ namespace LegendaryTools.StateMachineV2
             if(!IsRunning) return;
             Transit(CurrentState, null);
             CurrentState = null;
+            OnStop?.Invoke(this);
         }
 
         public void Update()
@@ -60,13 +66,14 @@ namespace LegendaryTools.StateMachineV2
             if (!States.TryGetValue(trigger, out IHardState<T> toState)) return;
             Transit(CurrentState, toState);
         }
-        
+
         protected void Transit(IHardState<T> fromState, IHardState<T> toState)
         {
             if (allowTransition != null && !allowTransition.Invoke(fromState, toState)) return;
             fromState?.InvokeOnStateExit();
             CurrentState = toState;
             toState?.InvokeOnStateEnter();
+            OnTransit?.Invoke(fromState, toState);
         }
     }
 }

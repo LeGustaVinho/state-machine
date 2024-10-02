@@ -1,7 +1,7 @@
 ﻿using System;
 using LegendaryTools.Graph;
 
-namespace LegendaryTools
+namespace LegendaryTools.StateMachine
 {
     [Serializable]
     public struct StateConnectionContext<TTrigger>

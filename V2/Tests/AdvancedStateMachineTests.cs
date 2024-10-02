@@ -91,7 +91,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Add(startState);
 
             bool onEnterCalled = false;
-            ((State<string>)startState).OnStateEnter += () => onEnterCalled = true;
+            ((State<string>)startState).OnStateEnter += (state) => onEnterCalled = true;
 
             // Act
             advancedStateMachine.Start(startState);
@@ -125,7 +125,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Start(startState);
 
             bool onExitCalled = false;
-            ((State<string>)startState).OnStateExit += () => onExitCalled = true;
+            ((State<string>)startState).OnStateExit += (state) => onExitCalled = true;
 
             // Act
             advancedStateMachine.Stop();
@@ -146,7 +146,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Start(startState);
 
             bool onUpdateCalled = false;
-            ((State<string>)startState).OnStateUpdate += () => onUpdateCalled = true;
+            ((State<string>)startState).OnStateUpdate += (state) => onUpdateCalled = true;
 
             // Act
             advancedStateMachine.Update();
@@ -190,7 +190,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("Jump");
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -221,7 +221,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("IsRunning", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -252,7 +252,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -283,7 +283,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("Speed", FloatParameterCondition.Less, 10.0f);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -321,7 +321,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Start(startState);
 
             bool onEnterCalled = false;
-            ((State<string>)startState).OnStateEnter += () => onEnterCalled = true;
+            ((State<string>)startState).OnStateEnter += (state) => onEnterCalled = true;
 
             // Act
             advancedStateMachine.Start(startState);
@@ -351,8 +351,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool onExitCalled = false;
             bool onEnterCalled = false;
 
-            ((State<string>)stateA).OnStateExit += () => onExitCalled = true;
-            ((State<string>)stateB).OnStateEnter += () => onEnterCalled = true;
+            ((State<string>)stateA).OnStateExit += (state) => onExitCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -385,7 +385,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -419,7 +419,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -458,8 +458,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool onExitA = false;
             bool onEnterC = false;
 
-            ((State<string>)stateA).OnStateExit += () => onExitA = true;
-            ((State<string>)stateC).OnStateEnter += () => onEnterC = true;
+            ((State<string>)stateA).OnStateExit += (state) => onExitA = true;
+            ((State<string>)stateC).OnStateEnter += (state) => onEnterC = true;
 
             // Act
             advancedStateMachine.SetTrigger("Trigger");
@@ -636,7 +636,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -675,7 +675,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("IsRunning", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -745,8 +745,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool onEnterBCalled = false;
             bool onEnterCCalled = false;
 
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
-            ((State<string>)stateC).OnStateEnter += () => onEnterCCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
+            ((State<string>)stateC).OnStateEnter += (state) => onEnterCCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -781,7 +781,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("IsAlive", BoolParameterCondition.True);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -896,8 +896,8 @@ namespace LegendaryTools.StateMachineV2.Tests
 
             List<string> eventOrder = new List<string>();
 
-            ((State<string>)stateA).OnStateExit += () => eventOrder.Add("ExitA");
-            ((State<string>)stateB).OnStateEnter += () => eventOrder.Add("EnterB");
+            ((State<string>)stateA).OnStateExit += (state) => eventOrder.Add("ExitA");
+            ((State<string>)stateB).OnStateEnter += (state) => eventOrder.Add("EnterB");
 
             advancedStateMachine.Start(stateA);
 
@@ -930,7 +930,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connection.AddCondition("Trigger");
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             // Act & Assert
             Assert.Throws<InvalidOperationException>(() => advancedStateMachine.SetTrigger("Trigger"),
@@ -949,7 +949,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Add(startState);
 
             int onEnterCallCount = 0;
-            ((State<string>)startState).OnStateEnter += () => onEnterCallCount++;
+            ((State<string>)startState).OnStateEnter += (state) => onEnterCallCount++;
 
             // Act
             advancedStateMachine.Start(startState);
@@ -972,7 +972,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             advancedStateMachine.Start(startState);
 
             int onExitCallCount = 0;
-            ((State<string>)startState).OnStateExit += () => onExitCallCount++;
+            ((State<string>)startState).OnStateExit += (state) => onExitCallCount++;
 
             // Act
             advancedStateMachine.Stop();
@@ -1011,8 +1011,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             int onEnterBCalled = 0;
             int onEnterACalled = 0;
 
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled++;
-            ((State<string>)stateA).OnStateEnter += () => onEnterACalled++;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled++;
+            ((State<string>)stateA).OnStateEnter += (state) => onEnterACalled++;
 
             advancedStateMachine.Start(stateA);
 
@@ -1056,8 +1056,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool onEnterBCalled = false;
             bool onEnterCCalled = false;
 
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
-            ((State<string>)stateC).OnStateEnter += () => onEnterCCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
+            ((State<string>)stateC).OnStateEnter += (state) => onEnterCCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -1091,7 +1091,7 @@ namespace LegendaryTools.StateMachineV2.Tests
             connectionAB.AddCondition("Health", IntParameterCondition.Greater, 50);
 
             bool onEnterBCalled = false;
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
 
             advancedStateMachine.Start(stateA);
 
@@ -1134,8 +1134,8 @@ namespace LegendaryTools.StateMachineV2.Tests
             bool onEnterBCalled = false;
             bool onEnterCCalled = false;
 
-            ((State<string>)stateB).OnStateEnter += () => onEnterBCalled = true;
-            ((State<string>)stateC).OnStateEnter += () => onEnterCCalled = true;
+            ((State<string>)stateB).OnStateEnter += (state) => onEnterBCalled = true;
+            ((State<string>)stateC).OnStateEnter += (state) => onEnterCCalled = true;
 
             advancedStateMachine.Start(stateA);
 

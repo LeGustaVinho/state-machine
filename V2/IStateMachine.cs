@@ -12,5 +12,9 @@ namespace LegendaryTools.StateMachineV2
         void Stop();
         void Update();
         void SetTrigger(T trigger);
+
+        event Action<IStateMachine<T>> OnStart;
+        event Action<IStateMachine<T>> OnStop;
+        event Action<IState, IState> OnTransit;
     }
 }

@@ -8,23 +8,23 @@ namespace LegendaryTools.StateMachineV2
         
         public T Type { get; }
         
-        public event Action OnStateEnter;
-        public event Action OnStateUpdate;
-        public event Action OnStateExit;
+        public event Action<IState> OnStateEnter;
+        public event Action<IState> OnStateUpdate;
+        public event Action<IState> OnStateExit;
         
         void IState.InvokeOnStateEnter()
         {
-            OnStateEnter?.Invoke();
+            OnStateEnter?.Invoke(this);
         }
 
         void IState.InvokeOnStateUpdate()
         {
-            OnStateUpdate?.Invoke();
+            OnStateUpdate?.Invoke(this);
         }
 
         void IState.InvokeOnStateExit()
         {
-            OnStateExit?.Invoke();
+            OnStateExit?.Invoke(this);
         }
 
         public HardState(T type)

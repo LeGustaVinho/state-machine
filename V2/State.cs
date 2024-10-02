@@ -7,9 +7,9 @@ namespace LegendaryTools.StateMachineV2
     {
         public string Name { get; set; }
         
-        public event Action OnStateEnter;
-        public event Action OnStateUpdate;
-        public event Action OnStateExit;
+        public event Action<IState> OnStateEnter;
+        public event Action<IState> OnStateUpdate;
+        public event Action<IState> OnStateExit;
 
         public State(string name = "") : base(false)
         {
@@ -53,19 +53,19 @@ namespace LegendaryTools.StateMachineV2
         void IState.InvokeOnStateEnter()
         {
             OnStateEntered();
-            OnStateEnter?.Invoke();
+            OnStateEnter?.Invoke(this);
         }
 
         void IState.InvokeOnStateUpdate()
         {
             OnStateUpdated();
-            OnStateUpdate?.Invoke();
+            OnStateUpdate?.Invoke(this);
         }
 
         void IState.InvokeOnStateExit()
         {
             OnStateExited();
-            OnStateExit?.Invoke();
+            OnStateExit?.Invoke(this);
         }
     }
 }

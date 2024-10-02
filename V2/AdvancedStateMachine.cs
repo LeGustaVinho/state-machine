@@ -13,8 +13,11 @@ namespace LegendaryTools.StateMachineV2
         public bool IsRunning => CurrentState != null;
         public IAdvancedState<T> CurrentState { get; protected set; }
         IState IStateMachine<T>.CurrentState => CurrentState;
-
         public Dictionary<T, ParameterState<T>> ParameterValues { get; protected set; } = new Dictionary<T, ParameterState<T>>();
+        
+        public event Action<IStateMachine<T>> OnStart;
+        public event Action<IStateMachine<T>> OnStop;
+        public event Action<IState, IState> OnTransit;
         
         public AdvancedStateMachine(IAdvancedState<T> anyState, string name = "")
         {
@@ -27,6 +30,7 @@ namespace LegendaryTools.StateMachineV2
             if (IsRunning) return;
             if (!Contains(startState)) throw new InvalidOperationException($"{nameof(startState)} must be a state inside of {Name} {nameof(AdvancedStateMachine<T>)}");
             Transit(null, startState, null);
+            OnStart?.Invoke(this);
         }
 
         public void Start(IState startState)
@@ -41,6 +45,7 @@ namespace LegendaryTools.StateMachineV2
             if (!IsRunning) return;
             Transit(CurrentState, null, null);
             CurrentState = null;
+            OnStop?.Invoke(this);
         }
 
         public void Update()
@@ -54,6 +59,7 @@ namespace LegendaryTools.StateMachineV2
             transition?.InvokeOnTransit();
             CurrentState = toState;
             toState?.InvokeOnStateEnter();
+            OnTransit?.Invoke(fromState, toState);
         }
         
         public void AddParameter(T parameterName, ParameterType parameterType)
