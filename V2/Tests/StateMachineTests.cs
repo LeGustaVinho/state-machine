@@ -393,11 +393,6 @@ namespace LegendaryTools.StateMachineV2.Tests
             // Act
             stateMachine.SetInt("Health", 75);
             stateMachine.SetBool("IsAlive", true);
-
-            if (stateB == stateMachine.CurrentState)
-            {
-                Debug.Log("yes");
-            }
             
             // Assert
             Assert.AreEqual(stateB, stateMachine.CurrentState,
