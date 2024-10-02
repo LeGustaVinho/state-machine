@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LegendaryTools.StateMachineV2
 {
-    public class HardStateMachine<T> : IHardStateMachine<T> where T : struct, Enum, IConvertible, IEquatable<T>
+    public class HardStateMachine<T> : IHardStateMachine<T> where T : struct, Enum, IConvertible
     {
         public string Name => typeof(T).Name;
         
@@ -32,6 +32,7 @@ namespace LegendaryTools.StateMachineV2
             if(IsRunning) return;
             if (!States.TryGetValue(startState.Type, out IHardState<T> state)) return;
             CurrentState = startState;
+            Transit(null, startState);
         }
 
         public void Start(IState startState)
@@ -43,6 +44,7 @@ namespace LegendaryTools.StateMachineV2
         public void Stop()
         {
             if(!IsRunning) return;
+            Transit(CurrentState, null);
             CurrentState = null;
         }
 

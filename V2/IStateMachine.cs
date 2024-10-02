@@ -2,7 +2,7 @@
 
 namespace LegendaryTools.StateMachineV2
 {
-    public interface IStateMachine<T> where T : IEquatable<T>
+    public interface IStateMachine<T>
     {
         string Name { get; set; }
         IState CurrentState { get; }

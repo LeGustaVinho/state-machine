@@ -60,8 +60,8 @@ namespace LegendaryTools.StateMachineV2
         {
             IGraph rootGraph = FromNode.Owner.GraphHierarchy.Length == 0 ? FromNode.Owner : FromNode.Owner.GraphHierarchy[0];
             if(rootGraph is not IAdvancedStateMachine<T> rootStateMachine) 
-                throw new InvalidOperationException($"Root {nameof(StateMachine<T>)} does not implements {nameof(IAdvancedStateMachine<T>)}.");
-            StateMachine<T>.ValidateParam(name, rootStateMachine, expectedDefinition, out ParameterState<T> parameterState);
+                throw new InvalidOperationException($"Root {nameof(AdvancedStateMachine<T>)} does not implements {nameof(IAdvancedStateMachine<T>)}.");
+            AdvancedStateMachine<T>.ValidateParam(name, rootStateMachine, expectedDefinition, out ParameterState<T> parameterState);
         }
 
         public void RemoveCondition(Predicate<Condition<T>> predicate)
@@ -79,7 +79,7 @@ namespace LegendaryTools.StateMachineV2
                     {
                         if (!parametersState.TryGetValue(condition.Name, out ParameterState<T> cParameterState))
                         {
-                            throw new InvalidOperationException($"You are trying to test a condition called {condition.Name} that has no parameter in the {nameof(StateMachine<T>)}.");
+                            throw new InvalidOperationException($"You are trying to test a condition called {condition.Name} that has no parameter in the {nameof(AdvancedStateMachine<T>)}.");
                         }
                         if (!condition.Evaluate(condition.Name, cParameterState)) return false;
                     }
@@ -91,7 +91,7 @@ namespace LegendaryTools.StateMachineV2
                     {
                         if (!parametersState.TryGetValue(condition.Name, out ParameterState<T> cParameterState))
                         {
-                            throw new InvalidOperationException($"You are trying to test a condition called {condition.Name} that has no parameter in the {nameof(StateMachine<T>)}.");
+                            throw new InvalidOperationException($"You are trying to test a condition called {condition.Name} that has no parameter in the {nameof(AdvancedStateMachine<T>)}.");
                         }
                         if (condition.Evaluate(condition.Name, cParameterState)) return true;
                     }
